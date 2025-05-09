@@ -45,7 +45,6 @@ ARG RUNNER_VERSION="2.317.0" # <-- UPDATE to the latest desired version
 ARG TARGETARCH # This will be set by the build platform (e.g., amd64, arm64)
 
 RUN curl -o actions-runner-linux-${TARGETARCH:-amd64}-${RUNNER_VERSION}.tar.gz -L https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-linux-${TARGETARCH:-amd64}-${RUNNER_VERSION}.tar.gz \
-    && echo "$(curl -Ls https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-linux-${TARGETARCH:-amd64}-${RUNNER_VERSION}.tar.gz.sha256sum | awk '{print $1}') actions-runner-linux-${TARGETARCH:-amd64}-${RUNNER_VERSION}.tar.gz" | sha256sum -c \
     && tar xzf ./actions-runner-linux-${TARGETARCH:-amd64}-${RUNNER_VERSION}.tar.gz \
     && rm ./actions-runner-linux-${TARGETARCH:-amd64}-${RUNNER_VERSION}.tar.gz
 

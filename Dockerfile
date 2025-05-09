@@ -3,9 +3,7 @@
 # 1. Start from an official NVIDIA CUDA base image
 # Choose a CUDA version compatible with your host drivers and application needs.
 # Check NVIDIA Docker Hub for available tags: https://hub.docker.com/r/nvidia/cuda
-ARG CUDA_VERSION="12.7.0"
-ARG CUDA_DISTRO="ubuntu22.04"
-FROM nvidia/cuda:${CUDA_VERSION}-devel-${CUDA_DISTRO}
+FROM nvidia/cuda:12.6.3-cudnn-devel-ubuntu24.04
 
 # Avoid prompts during package installation
 ENV DEBIAN_FRONTEND=noninteractive

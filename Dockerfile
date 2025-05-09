@@ -3,8 +3,7 @@
 # 1. Start from an official NVIDIA CUDA base image
 # Choose a CUDA version compatible with your host drivers and application needs.
 # Check NVIDIA Docker Hub for available tags: https://hub.docker.com/r/nvidia/cuda
-# Example: CUDA 12.1.0 with Ubuntu 22.04
-ARG CUDA_VERSION="12.1.0"
+ARG CUDA_VERSION="12.7.0"
 ARG CUDA_DISTRO="ubuntu22.04"
 FROM nvidia/cuda:${CUDA_VERSION}-devel-${CUDA_DISTRO}
 
@@ -40,13 +39,9 @@ USER ${RUNNER_USER}
 WORKDIR /home/${RUNNER_USER}
 
 # Download and install the runner
-# Find the latest runner version at: https://github.com/actions/runner/releases
-ARG RUNNER_VERSION="2.317.0" # <-- UPDATE to the latest desired version
-ARG TARGETARCH # This will be set by the build platform (e.g., amd64, arm64)
-
-RUN curl -o actions-runner-linux-${TARGETARCH:-amd64}-${RUNNER_VERSION}.tar.gz -L https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-linux-${TARGETARCH:-amd64}-${RUNNER_VERSION}.tar.gz \
-    && tar xzf ./actions-runner-linux-${TARGETARCH:-amd64}-${RUNNER_VERSION}.tar.gz \
-    && rm ./actions-runner-linux-${TARGETARCH:-amd64}-${RUNNER_VERSION}.tar.gz
+RUN curl -o actions-runner-linux.tar.gz -L https://github.com/actions/runner/releases/download/v2.323.0/actions-runner-linux-x64-2.323.0.tar.gz \
+    && tar xzf ./actions-runner-linux.tar.gz \
+    && rm ./actions-runner-linux.tar.gz
 
 # The runner software includes dependencies needed for various OS capabilities.
 # If you need to install them manually (e.g. for very minimal base images without sudo):

@@ -1,0 +1,42 @@
+# arc-gpu-runner-values.yaml
+
+# --- Your existing configurations ---
+githubConfigUrl: "https://github.com/jpata/particleflow"
+githubConfigSecret: "pre-defined-secret" # Make sure this secret is correctly set up in the arc-runners namespace
+
+# --- GPU Configuration ---
+template:
+  spec:
+    # Ensure the runner image has CUDA toolkit and NVIDIA drivers compatibility
+    # You might need a custom Docker image (see notes below)
+    # image: your-custom-gpu-runner-image:latest
+
+    containers:
+      - name: arc-runner # The default container name is usually 'runner' or 'arc-runner'
+                   # Check the chart's default values or 'kubectl describe pod' for the exact name if unsure.
+                   # If the chart nests containers under a different key, adjust accordingly.
+                   # For gha-runner-scale-set, it's typically the main runner container defined in the pod template.
+        resources:
+          limits:
+            # Request 1 GPU. Adjust if you need more and your nodes have them.
+            nvidia.com/gpu: 1
+          # You might also want to set requests, often same as limits for GPUs
+          requests:
+            nvidia.com/gpu: 1 # Optional, but good practice for scheduling
+
+    # --- Optional but Recommended for GPU Nodes ---
+
+    # Node Selector: If you have specific nodes with GPUs, you can target them.
+    # nodeSelector:
+    #   nvidia.com/gpu: "true" # Or other labels your GPU nodes have
+    #   # example-label-key: example-label-value
+
+    # Tolerations: If your GPU nodes have taints (e.g., by the NVIDIA GPU Operator)
+    # tolerations:
+    # - key: "nvidia.com/gpu"
+    #   operator: "Exists"
+    #   effect: "NoSchedule"
+    # - key: "sku" # Example taint
+    #   operator: "Equal"
+    #   value: "gpu"
+    #   effect: "NoSchedule"

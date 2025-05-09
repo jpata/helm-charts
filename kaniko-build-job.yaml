@@ -1,0 +1,38 @@
+# kaniko-build-job.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: build-cuda-runner-image
+  namespace: default # Or your dedicated build namespace
+spec:
+  template:
+    spec:
+      containers:
+      - name: kaniko
+        image: gcr.io/kaniko-project/executor:v1.12.1 # Check for the latest Kaniko image tag
+        args:
+          - "--context=git://github.com/jpata/helm-charts.git#refs/heads/main" # Or your specific branch/commit
+          - "--dockerfile=Dockerfile" # Relative to the root of your repo, e.g., ./Dockerfile
+          - "--destination=hub.docker.com/jpata/cuda-gha-runner:latest" # Target image
+          # Add more tags with multiple --destination flags if needed
+          # - "--destination=ghcr.io/<your-github-username>/my-cuda-actions-runner:$(git rev-parse --short HEAD)" # Example for tagging with commit SHA
+          - "--cache=true" # Enable Kaniko's layer caching for faster rebuilds
+          - "--cache-repo=ghcr.io/<your-github-username>/kaniko-cache" # Optional: a separate repo for Kaniko cache
+          # For build arguments defined in your Dockerfile (e.g. RUNNER_VERSION)
+          # - "--build-arg=RUNNER_VERSION=2.317.0"
+          # For multi-platform builds (Kaniko supports this, but ensure base images do too)
+          # - "--customPlatform=linux/amd64"
+        # Mount the Docker config secret for registry authentication
+        volumeMounts:
+          - name: docker-config
+            mountPath: /kaniko/.docker/
+            readOnly: true
+      restartPolicy: Never
+      volumes:
+        - name: docker-config
+          secret:
+            secretName: ghcr-creds # Or dockerhub-creds, matching the secret you created
+            items:
+              - key: .dockerconfigjson # This key is standard for docker-registry secrets
+                path: config.json
+  backoffLimit: 0 # Don't retry the job automatically on failure for this example
